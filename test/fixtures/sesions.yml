@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  alumno: MyString
+  juego: MyString
+  fecha: 2026-03-17
+  aciertos: 1
+  intentos: 1
+
+two:
+  alumno: MyString
+  juego: MyString
+  fecha: 2026-03-17
+  aciertos: 1
+  intentos: 1

@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  nombre: MyString
+  edad: 1
+  dificultad: MyString
+  curso: MyString
+  progreso: 1
+
+two:
+  nombre: MyString
+  edad: 1
+  dificultad: MyString
+  curso: MyString
+  progreso: 1
