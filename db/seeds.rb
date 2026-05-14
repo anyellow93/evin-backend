@@ -53,17 +53,17 @@ puts "  ✓ #{Juego.count} juegos creados"
 # ─── USUARIOS ────────────────────────────────────────────────────────────────
 
 usuarios_data = [
-  { nombre: 'Admin EVIN',      email: 'admin@evin.es',    password: 'evin1234', role: 'tecnico'    },
-  { nombre: 'Profesora García', email: 'garcia@evin.es',  password: 'evin1234', role: 'profesor' },
-  { nombre: 'Técnico López',   email: 'lopez@evin.es',    password: 'evin1234', role: 'tecnico'  },
-  { nombre: 'Familia Martín',  email: 'martin@evin.es',   password: 'evin1234', role: 'padre' }
+  { nombre: 'Admin EVIN',      email: 'admin@evin.es',    password: 'evin1234', rol: 'tecnico'    },
+  { nombre: 'Profesora García', email: 'garcia@evin.es',  password: 'evin1234', rol: 'profesor' },
+  { nombre: 'Técnico López',   email: 'lopez@evin.es',    password: 'evin1234', rol: 'tecnico'  },
+  { nombre: 'Familia Martín',  email: 'martin@evin.es',   password: 'evin1234', rol: 'padre' }
 ]
 
 usuarios_data.each do |datos|
   User.find_or_create_by!(email: datos[:email]) do |u|
     u.nombre   = datos[:nombre]
     u.password = datos[:password]
-    u.role     = datos[:role]
+    u.rol      = datos[:rol]
   end
 end
 

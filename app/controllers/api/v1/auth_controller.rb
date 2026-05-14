@@ -18,12 +18,12 @@ module Api::V1
         nombre:   params[:nombre],
         email:    params[:email]&.downcase,
         password: params[:password],
-        role:     params[:role] || params[:rol] || 'profesor'
+        rol:      params[:rol] || params[:role] || 'profesor'
       )
 
       if user.save
         # Si el rol es alumno, vincular o crear su ficha en la tabla alumnos
-        if user.role == 'alumno'
+        if user.rol == 'alumno'
           alumno = ::Alumno.find_or_initialize_by(nombre: user.nombre)
           alumno.user_id    ||= user.id
           alumno.curso      ||= params[:curso] || ''
@@ -66,7 +66,7 @@ module Api::V1
       payload = {
         user_id: user.id,
         email:   user.email,
-        role:    user.role,
+        rol:    user.rol,
         exp:     24.hours.from_now.to_i
       }
       JWT.encode(payload, jwt_secret, 'HS256')
@@ -77,7 +77,7 @@ module Api::V1
         id:     user.id,
         nombre: user.nombre,
         email:  user.email,
-        role:   user.role
+        rol:   user.rol
       }
     end
 
