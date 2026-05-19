@@ -1,15 +1,5 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
 # db/seeds.rb
 # Ejecutar con: rails db:seed
-# Para resetear: rails db:schema:load && rails db:seed
 
 puts '🌱 Sembrando base de datos EVIN...'
 
@@ -36,6 +26,13 @@ juegos_data = [
     img:         'img/juegos/radar.png',
     nivel:       'Difícil',
     tipo:        'Atención visual'
+  },
+  {
+    nombre:      'Encuentra las diferencias',
+    descripcion: 'El alumno observa dos imágenes casi idénticas y debe localizar todas las diferencias entre ellas. Trabaja la discriminación visual, la atención sostenida y los recorridos visuales.',
+    img:         'img/juegos/diferencias.png',
+    nivel:       'Medio',
+    tipo:        'Atención visual'
   }
 ]
 
@@ -48,15 +45,15 @@ juegos_data.each do |datos|
   end
 end
 
-puts "  ✓ #{Juego.count} juegos creados"
+puts "  ✓ #{Juego.count} juegos creados/existentes"
 
 # ─── USUARIOS ────────────────────────────────────────────────────────────────
 
 usuarios_data = [
-  { nombre: 'Admin EVIN',      email: 'admin@evin.es',    password: 'evin1234', rol: 'tecnico'    },
-  { nombre: 'Profesora García', email: 'garcia@evin.es',  password: 'evin1234', rol: 'profesor' },
-  { nombre: 'Técnico López',   email: 'lopez@evin.es',    password: 'evin1234', rol: 'tecnico'  },
-  { nombre: 'Familia Martín',  email: 'martin@evin.es',   password: 'evin1234', rol: 'padre' }
+  { nombre: 'Admin EVIN',       email: 'admin@evin.es',  password: 'Evin1234!', rol: 'tecnico'  },
+  { nombre: 'Profesora García', email: 'garcia@evin.es', password: 'Evin1234!', rol: 'profesor' },
+  { nombre: 'Técnico López',    email: 'lopez@evin.es',  password: 'Evin1234!', rol: 'tecnico'  },
+  { nombre: 'Familia Martín',   email: 'martin@evin.es', password: 'Evin1234!', rol: 'padre'    }
 ]
 
 usuarios_data.each do |datos|
@@ -67,17 +64,17 @@ usuarios_data.each do |datos|
   end
 end
 
-puts "  ✓ #{User.count} usuarios creados"
+puts "  ✓ #{User.count} usuarios creados/existentes"
 
 # ─── ALUMNOS ─────────────────────────────────────────────────────────────────
 
 alumnos_data = [
-  { nombre: 'Ana García Ruiz',     edad: 7,  dificultad: 'Fácil',  curso: '1º Primaria', progreso: 40 },
-  { nombre: 'Carlos López Sanz',   edad: 9,  dificultad: 'Medio',  curso: '3º Primaria', progreso: 65 },
-  { nombre: 'María Sánchez Pérez', edad: 8,  dificultad: 'Fácil',  curso: '2º Primaria', progreso: 55 },
+  { nombre: 'Ana García Ruiz',     edad: 7,  dificultad: 'Fácil',   curso: '1º Primaria', progreso: 40 },
+  { nombre: 'Carlos López Sanz',   edad: 9,  dificultad: 'Medio',   curso: '3º Primaria', progreso: 65 },
+  { nombre: 'María Sánchez Pérez', edad: 8,  dificultad: 'Fácil',   curso: '2º Primaria', progreso: 55 },
   { nombre: 'Pablo Martín Gil',    edad: 11, dificultad: 'Difícil', curso: '5º Primaria', progreso: 80 },
-  { nombre: 'Lucía Torres Vega',   edad: 6,  dificultad: 'Fácil',  curso: '1º Primaria', progreso: 25 },
-  { nombre: 'Diego Fernández',     edad: 10, dificultad: 'Medio',  curso: '4º Primaria', progreso: 70 }
+  { nombre: 'Lucía Torres Vega',   edad: 6,  dificultad: 'Fácil',   curso: '1º Primaria', progreso: 25 },
+  { nombre: 'Diego Fernández',     edad: 10, dificultad: 'Medio',   curso: '4º Primaria', progreso: 70 }
 ]
 
 alumnos_data.each do |datos|
@@ -89,47 +86,59 @@ alumnos_data.each do |datos|
   end
 end
 
-puts "  ✓ #{Alumno.count} alumnos creados"
+puts "  ✓ #{Alumno.count} alumnos creados/existentes"
 
 # ─── SESIONES DE EJEMPLO ─────────────────────────────────────────────────────
 
-juego_memoria = Juego.find_by(nombre: 'Encuentra las parejas')
-juego_grid    = Juego.find_by(nombre: 'Recuerda las casillas')
-juego_radar   = Juego.find_by(nombre: 'Radar visual')
+begin
+  cols = Sesion.column_names
+  puts "  Columnas de sesions: #{cols.join(', ')}"
 
-sesiones_data = [
-  # Ana — nivel fácil, progresando
-  { alumno: 'Ana García Ruiz',     juego: juego_memoria.nombre, aciertos: 6,  intentos: 10, fecha: 10.days.ago },
-  { alumno: 'Ana García Ruiz',     juego: juego_memoria.nombre, aciertos: 7,  intentos: 10, fecha: 5.days.ago  },
-  { alumno: 'Ana García Ruiz',     juego: juego_memoria.nombre, aciertos: 8,  intentos: 10, fecha: 1.day.ago   },
-  # Carlos — nivel medio, buen rendimiento
-  { alumno: 'Carlos López Sanz',   juego: juego_grid.nombre,    aciertos: 4,  intentos: 5,  fecha: 7.days.ago  },
-  { alumno: 'Carlos López Sanz',   juego: juego_grid.nombre,    aciertos: 5,  intentos: 5,  fecha: 3.days.ago  },
-  { alumno: 'Carlos López Sanz',   juego: juego_radar.nombre,   aciertos: 8,  intentos: 12, fecha: 2.days.ago  },
-  # Pablo — nivel difícil, experto
-  { alumno: 'Pablo Martín Gil',    juego: juego_radar.nombre,   aciertos: 10, intentos: 12, fecha: 6.days.ago  },
-  { alumno: 'Pablo Martín Gil',    juego: juego_radar.nombre,   aciertos: 11, intentos: 12, fecha: 2.days.ago  },
-  # Lucía — nivel fácil, recién empezando
-  { alumno: 'Lucía Torres Vega',   juego: juego_memoria.nombre, aciertos: 3,  intentos: 10, fecha: 3.days.ago  },
-  { alumno: 'Lucía Torres Vega',   juego: juego_memoria.nombre, aciertos: 5,  intentos: 10, fecha: 1.day.ago   }
-]
+  if cols.include?('alumno_id') && cols.include?('juego_id')
+    # BD local: usa alumno_id y juego_id (enteros)
+    ana    = Alumno.find_by(nombre: 'Ana García Ruiz')
+    carlos = Alumno.find_by(nombre: 'Carlos López Sanz')
+    pablo  = Alumno.find_by(nombre: 'Pablo Martín Gil')
+    lucia  = Alumno.find_by(nombre: 'Lucía Torres Vega')
+    diego  = Alumno.find_by(nombre: 'Diego Fernández')
+    maria  = Alumno.find_by(nombre: 'María Sánchez Pérez')
 
-sesiones_data.each do |datos|
-  Sesion.create!(
-    alumno:   datos[:alumno],
-    juego:    datos[:juego],
-    aciertos: datos[:aciertos],
-    intentos: datos[:intentos],
-    fecha:    datos[:fecha]
-  )
+    j_mem  = Juego.find_by(nombre: 'Encuentra las parejas')
+    j_grid = Juego.find_by(nombre: 'Recuerda las casillas')
+    j_rad  = Juego.find_by(nombre: 'Radar visual')
+    j_dif  = Juego.find_by(nombre: 'Encuentra las diferencias')
+
+    [
+      { alumno_id: ana.id,    juego_id: j_mem.id,  aciertos: 6,  intentos: 10, fecha: 10.days.ago },
+      { alumno_id: ana.id,    juego_id: j_mem.id,  aciertos: 7,  intentos: 10, fecha: 5.days.ago  },
+      { alumno_id: ana.id,    juego_id: j_mem.id,  aciertos: 8,  intentos: 10, fecha: 1.day.ago   },
+      { alumno_id: carlos.id, juego_id: j_grid.id, aciertos: 4,  intentos: 5,  fecha: 7.days.ago  },
+      { alumno_id: carlos.id, juego_id: j_grid.id, aciertos: 5,  intentos: 5,  fecha: 3.days.ago  },
+      { alumno_id: carlos.id, juego_id: j_rad.id,  aciertos: 8,  intentos: 12, fecha: 2.days.ago  },
+      { alumno_id: pablo.id,  juego_id: j_rad.id,  aciertos: 10, intentos: 12, fecha: 6.days.ago  },
+      { alumno_id: pablo.id,  juego_id: j_rad.id,  aciertos: 11, intentos: 12, fecha: 2.days.ago  },
+      { alumno_id: lucia.id,  juego_id: j_mem.id,  aciertos: 3,  intentos: 10, fecha: 3.days.ago  },
+      { alumno_id: lucia.id,  juego_id: j_mem.id,  aciertos: 5,  intentos: 10, fecha: 1.day.ago   },
+      { alumno_id: diego.id,  juego_id: j_dif.id,  aciertos: 3,  intentos: 5,  fecha: 4.days.ago  },
+      { alumno_id: maria.id,  juego_id: j_dif.id,  aciertos: 5,  intentos: 7,  fecha: 2.days.ago  }
+    ].each { |s| Sesion.create!(s) }
+
+  elsif cols.include?('alumno') && cols.include?('juego')
+    # Servidor producción: usa strings
+    [
+      { alumno: 'Ana García Ruiz',     juego: 'Encuentra las parejas',     aciertos: 6,  intentos: 10, fecha: 10.days.ago },
+      { alumno: 'Ana García Ruiz',     juego: 'Encuentra las parejas',     aciertos: 8,  intentos: 10, fecha: 1.day.ago   },
+      { alumno: 'Carlos López Sanz',   juego: 'Recuerda las casillas',     aciertos: 5,  intentos: 5,  fecha: 3.days.ago  },
+      { alumno: 'Pablo Martín Gil',    juego: 'Radar visual',              aciertos: 11, intentos: 12, fecha: 2.days.ago  },
+      { alumno: 'Lucía Torres Vega',   juego: 'Encuentra las parejas',     aciertos: 5,  intentos: 10, fecha: 1.day.ago   },
+      { alumno: 'Diego Fernández',     juego: 'Encuentra las diferencias', aciertos: 3,  intentos: 5,  fecha: 4.days.ago  },
+      { alumno: 'María Sánchez Pérez', juego: 'Encuentra las diferencias', aciertos: 5,  intentos: 7,  fecha: 2.days.ago  }
+    ].each { |s| Sesion.create!(s) }
+  end
+
+  puts "  ✓ #{Sesion.count} sesiones creadas"
+rescue => e
+  puts "  ⚠️  Sesiones omitidas: #{e.message}"
 end
 
-puts "  ✓ #{Sesion.count} sesiones de ejemplo creadas"
-puts ''
 puts '✅ Base de datos lista.'
-puts ''
-puts '   Credenciales de prueba:'
-puts '   admin@evin.es    / evin1234  (tecnico)'
-puts '   garcia@evin.es   / evin1234  (profesor)'
-puts '   lopez@evin.es    / evin1234  (técnico)'
-puts '   martin@evin.es   / evin1234  (padre)'
