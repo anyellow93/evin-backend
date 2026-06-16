@@ -4,7 +4,8 @@ Rails.application.routes.draw do
       # Autenticación
        post '/login',    to: 'auth#login'
        post '/register', to: 'auth#register'
-       get  '/me',       to: 'auth#me'
+       get   '/me', to: 'auth#me'
+       patch '/me', to: 'auth#update_me'
 
       # Recursos
       resources :juegos,   only: [:index, :show]
