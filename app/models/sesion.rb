@@ -16,8 +16,8 @@ class Sesion < ApplicationRecord
 
   # Scopes reutilizables
   scope :recientes,  -> { order(fecha: :desc) }
-  scope :de_alumno,  ->(nombre) { where('alumno ILIKE ?', "%#{nombre}%") }
-  scope :de_juego,   ->(nombre) { where('juego ILIKE ?',  "%#{nombre}%") }
+  scope :de_alumno,  ->(nombre) { where("alumno ILIKE ?", "%#{nombre}%") }
+  scope :de_juego,   ->(nombre) { where("juego ILIKE ?",  "%#{nombre}%") }
   scope :ultimo_mes, -> { where(fecha: 1.month.ago..) }
 
   def porcentaje_aciertos
@@ -27,7 +27,7 @@ class Sesion < ApplicationRecord
 
   def as_json(options = {})
     super(options.merge(only: %i[id alumno juego fecha aciertos intentos alumno_id]))
-      .merge('porcentaje' => porcentaje_aciertos)
+      .merge("porcentaje" => porcentaje_aciertos)
   end
 
   private
@@ -35,7 +35,7 @@ class Sesion < ApplicationRecord
   def aciertos_no_superan_intentos
     return unless aciertos && intentos
     return unless aciertos > intentos
-    errors.add(:aciertos, 'no pueden superar el número de intentos')
+    errors.add(:aciertos, "no pueden superar el número de intentos")
   end
 
   def establecer_fecha

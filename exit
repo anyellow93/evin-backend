@@ -1,0 +1,341 @@
+[1mdiff --git a/Gemfile b/Gemfile[m
+[1mindex 2e5b048..2c133c6 100644[m
+[1m--- a/Gemfile[m
+[1m+++ b/Gemfile[m
+[36m@@ -40,5 +40,3 @@[m [mgroup :development, :test do[m
+   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/][m
+   gem "rubocop-rails-omakase", require: false[m
+ end[m
+[31m-[m
+[31m-[m
+[1mdiff --git a/app/controllers/api/v1/alumnos_controller.rb b/app/controllers/api/v1/alumnos_controller.rb[m
+[1mindex 5341cad..adab049 100644[m
+[1m--- a/app/controllers/api/v1/alumnos_controller.rb[m
+[1m+++ b/app/controllers/api/v1/alumnos_controller.rb[m
+[36m@@ -2,8 +2,8 @@[m [mmodule Api[m
+   module V1[m
+     class AlumnosController < ApplicationController[m
+       before_action :authenticate_user![m
+[31m-      before_action :autorizar_gestion!, only: [:create, :update, :destroy][m
+[31m-      before_action :set_alumno,         only: [:show, :update, :destroy, :estadisticas][m
+[32m+[m[32m      before_action :autorizar_gestion!, only: [ :create, :update, :destroy ][m
+[32m+[m[32m      before_action :set_alumno,         only: [ :show, :update, :destroy, :estadisticas ][m
+ [m
+       # GET /api/v1/alumnos[m
+       def index[m
+[36m@@ -54,7 +54,7 @@[m [mmodule Api[m
+         end[m
+ [m
+         # Tendencia de mejora — comparar primera mitad vs segunda mitad de sesiones[m
+[31m-        tendencia = 'sin_datos'[m
+[32m+[m[32m        tendencia = "sin_datos"[m
+         if sesiones_totales >= 4[m
+           mitad    = sesiones_totales / 2[m
+           recientes = sesiones.first(mitad)[m
+[36m@@ -65,17 +65,17 @@[m [mmodule Api[m
+ [m
+           diferencia = media_reciente - media_antigua[m
+           tendencia = if diferencia > 0.05[m
+[31m-            'mejorando'[m
+[32m+[m[32m            "mejorando"[m
+           elsif diferencia < -0.05[m
+[31m-            'empeorando'[m
+[32m+[m[32m            "empeorando"[m
+           else[m
+[31m-            'estable'[m
+[32m+[m[32m            "estable"[m
+           end[m
+         end[m
+ [m
+         # Sesiones esta semana[m
+         inicio_semana = Date.today.beginning_of_week[m
+[31m-        sesiones_semana = sesiones.where('fecha >= ?', inicio_semana).count[m
+[32m+[m[32m        sesiones_semana = sesiones.where("fecha >= ?", inicio_semana).count[m
+ [m
+         render json: {[m
+           sesiones_totales:    sesiones_totales,[m
+[36m@@ -114,7 +114,7 @@[m [mmodule Api[m
+         else[m
+           @alumno.destroy[m
+         end[m
+[31m-        render json: { message: 'Alumno y cuenta eliminados correctamente' }, status: :ok[m
+[32m+[m[32m        render json: { message: "Alumno y cuenta eliminados correctamente" }, status: :ok[m
+       end[m
+ [m
+       private[m
+[36m@@ -122,7 +122,7 @@[m [mmodule Api[m
+       def set_alumno[m
+         @alumno = Alumno.find(params[:id])[m
+       rescue ActiveRecord::RecordNotFound[m
+[31m-        render json: { error: 'Alumno no encontrado' }, status: :not_found[m
+[32m+[m[32m        render json: { error: "Alumno no encontrado" }, status: :not_found[m
+       end[m
+ [m
+       def alumno_params[m
+[36m@@ -131,7 +131,7 @@[m [mmodule Api[m
+ [m
+       def autorizar_gestion![m
+         unless current_user&.profesor? || current_user&.tecnico?[m
+[31m-          render json: { error: 'No autorizado. Solo profesores y técnicos pueden gestionar alumnos.' },[m
+[32m+[m[32m          render json: { error: "No autorizado. Solo profesores y técnicos pueden gestionar alumnos." },[m
+                  status: :forbidden[m
+         end[m
+       end[m
+[1mdiff --git a/app/controllers/api/v1/dashboard_controller.rb b/app/controllers/api/v1/dashboard_controller.rb[m
+[1mindex 58001ab..0518efa 100644[m
+[1m--- a/app/controllers/api/v1/dashboard_controller.rb[m
+[1m+++ b/app/controllers/api/v1/dashboard_controller.rb[m
+[36m@@ -14,12 +14,12 @@[m [mmodule Api[m
+         # ── Stats globales ─────────────────────────────────────────[m
+         total_alumnos   = alumnos.count[m
+         total_sesiones  = sesiones.count[m
+[31m-        sesiones_hoy    = sesiones.where('fecha = ?', hoy).count[m
+[31m-        sesiones_semana = sesiones.where('fecha >= ?', inicio_semana).count[m
+[32m+[m[32m        sesiones_hoy    = sesiones.where("fecha = ?", hoy).count[m
+[32m+[m[32m        sesiones_semana = sesiones.where("fecha >= ?", inicio_semana).count[m
+ [m
+         # ── Alumnos más activos esta semana ────────────────────────[m
+         activos_semana = Sesion[m
+[31m-          .where('fecha >= ?', inicio_semana)[m
+[32m+[m[32m          .where("fecha >= ?", inicio_semana)[m
+           .group(:alumno_id)[m
+           .count[m
+           .sort_by { |_, v| -v }[m
+[36m@@ -33,7 +33,7 @@[m [mmodule Api[m
+ [m
+         # ── Alumnos sin sesiones recientes (más de 7 días) ─────────[m
+         alumno_ids_activos = sesiones[m
+[31m-          .where('fecha >= ?', 7.days.ago.to_date)[m
+[32m+[m[32m          .where("fecha >= ?", 7.days.ago.to_date)[m
+           .pluck(:alumno_id)[m
+           .uniq[m
+ [m
+[1mdiff --git a/app/controllers/api/v1/sesiones_controller.rb b/app/controllers/api/v1/sesiones_controller.rb[m
+[1mindex ee0f9a8..6841738 100644[m
+[1m--- a/app/controllers/api/v1/sesiones_controller.rb[m
+[1m+++ b/app/controllers/api/v1/sesiones_controller.rb[m
+[36m@@ -20,28 +20,28 @@[m [mmodule Api[m
+ [m
+       # POST /api/v1/sesiones[m
+       def create[m
+[31m-	  sesion = ::Sesion.new([m
+[31m-	    alumno:   params[:alumno],[m
+[31m-	    juego:    params[:juego],[m
+[31m-	    aciertos: params[:aciertos],[m
+[31m-	    intentos: params[:intentos],[m
+[31m-	    fecha:    params[:fecha][m
+[31m-	  )[m
+[31m-[m
+[31m-	  # Vincular alumno_id si viene y es válido[m
+[31m-	  if params[:alumno_id].present?[m
+[31m-	    sesion.alumno_id = params[:alumno_id].to_i[m
+[31m-	  elsif params[:alumno].present?[m
+[31m-	    alumno = ::Alumno.find_by(nombre: params[:alumno])[m
+[31m-	    sesion.alumno_id = alumno.id if alumno[m
+[31m-	  end[m
+[31m-[m
+[31m-	  if sesion.save[m
+[31m-	    render json: sesion, status: :created[m
+[31m-	  else[m
+[31m-	    render json: { errors: sesion.errors.full_messages }, status: :unprocessable_entity[m
+[31m-	  end[m
+[31m-	end[m
+[32m+[m[32m    sesion = ::Sesion.new([m
+[32m+[m[32m      alumno:   params[:alumno],[m
+[32m+[m[32m      juego:    params[:juego],[m
+[32m+[m[32m      aciertos: params[:aciertos],[m
+[32m+[m[32m      intentos: params[:intentos],[m
+[32m+[m[32m      fecha:    params[:fecha][m
+[32m+[m[32m    )[m
+[32m+[m
+[32m+[m[32m    # Vincular alumno_id si viene y es válido[m
+[32m+[m[32m    if params[:alumno_id].present?[m
+[32m+[m[32m      sesion.alumno_id = params[:alumno_id].to_i[m
+[32m+[m[32m    elsif params[:alumno].present?[m
+[32m+[m[32m      alumno = ::Alumno.find_by(nombre: params[:alumno])[m
+[32m+[m[32m      sesion.alumno_id = alumno.id if alumno[m
+[32m+[m[32m    end[m
+[32m+[m
+[32m+[m[32m    if sesion.save[m
+[32m+[m[32m      render json: sesion, status: :created[m
+[32m+[m[32m    else[m
+[32m+[m[32m      render json: { errors: sesion.errors.full_messages }, status: :unprocessable_entity[m
+[32m+[m[32m    end[m
+[32m+[m[32m  end[m
+ [m
+       private[m
+ [m
+[1mdiff --git a/app/controllers/application_controller.rb b/app/controllers/application_controller.rb[m
+[1mindex 71c83ec..15a4081 100644[m
+[1m--- a/app/controllers/application_controller.rb[m
+[1m+++ b/app/controllers/application_controller.rb[m
+[36m@@ -1,16 +1,16 @@[m
+ class ApplicationController < ActionController::API[m
+   def authenticate_user![m
+[31m-    token = request.headers['Authorization']&.split(' ')&.last[m
+[32m+[m[32m    token = request.headers["Authorization"]&.split(" ")&.last[m
+     unless token[m
+[31m-      render json: { error: 'Token no proporcionado' }, status: :unauthorized and return[m
+[32m+[m[32m      render json: { error: "Token no proporcionado" }, status: :unauthorized and return[m
+     end[m
+     begin[m
+[31m-      payload = JWT.decode(token, jwt_secret, true, algorithm: 'HS256').first[m
+[31m-      @current_user = User.find(payload['user_id'])[m
+[32m+[m[32m      payload = JWT.decode(token, jwt_secret, true, algorithm: "HS256").first[m
+[32m+[m[32m      @current_user = User.find(payload["user_id"])[m
+     rescue JWT::ExpiredSignature[m
+[31m-      render json: { error: 'Token expirado' }, status: :unauthorized[m
+[32m+[m[32m      render json: { error: "Token expirado" }, status: :unauthorized[m
+     rescue JWT::DecodeError, ActiveRecord::RecordNotFound[m
+[31m-      render json: { error: 'Token inválido' }, status: :unauthorized[m
+[32m+[m[32m      render json: { error: "Token inválido" }, status: :unauthorized[m
+     end[m
+   end[m
+ [m
+[1mdiff --git a/app/models/alumno.rb b/app/models/alumno.rb[m
+[1mindex fb28a90..c33b68b 100644[m
+[1m--- a/app/models/alumno.rb[m
+[1m+++ b/app/models/alumno.rb[m
+[36m@@ -10,7 +10,7 @@[m [mclass Alumno < ApplicationRecord[m
+                                          less_than: 100 },[m
+                          allow_nil: true[m
+   validates :dificultad, inclusion: { in: DIFICULTADES,[m
+[31m-                                      message: 'debe ser Fácil, Medio o Difícil' },[m
+[32m+[m[32m                                      message: "debe ser Fácil, Medio o Difícil" },[m
+                          allow_nil: true[m
+   validates :progreso,   numericality: { only_integer: true,[m
+                                          greater_than_or_equal_to: 0,[m
+[36m@@ -18,13 +18,13 @@[m [mclass Alumno < ApplicationRecord[m
+                          allow_nil: true[m
+ [m
+   def as_json(options = {})[m
+[31m-    super(options).merge('img' => img_corporativa)[m
+[32m+[m[32m    super(options).merge("img" => img_corporativa)[m
+   end[m
+ [m
+   private[m
+ [m
+   # Devuelve la imagen corporativa EVIN si el alumno no tiene foto propia[m
+   def img_corporativa[m
+[31m-    'img/corporativo.png'[m
+[32m+[m[32m    "img/corporativo.png"[m
+   end[m
+ end[m
+[1mdiff --git a/app/models/juego.rb b/app/models/juego.rb[m
+[1mindex e5cb7f3..03278e5 100644[m
+[1m--- a/app/models/juego.rb[m
+[1m+++ b/app/models/juego.rb[m
+[36m@@ -1,7 +1,7 @@[m
+ class Juego < ApplicationRecord[m
+   NIVELES = %w[Fácil Medio Difícil].freeze[m
+[31m-  TIPOS   = ['Atención visual', 'Memoria visual', 'Reconocimiento emocional',[m
+[31m-             'Percepción espacial', 'Rasgos críticos'].freeze[m
+[32m+[m[32m  TIPOS   = [ "Atención visual", "Memoria visual", "Reconocimiento emocional",[m
+[32m+[m[32m             "Percepción espacial", "Rasgos críticos" ].freeze[m
+ [m
+   validates :nombre,      presence: true, uniqueness: true[m
+   validates :descripcion, presence: true[m
+[1mdiff --git a/app/models/sesion.rb b/app/models/sesion.rb[m
+[1mindex 4685bb4..450cfc9 100644[m
+[1m--- a/app/models/sesion.rb[m
+[1m+++ b/app/models/sesion.rb[m
+[36m@@ -16,8 +16,8 @@[m [mclass Sesion < ApplicationRecord[m
+ [m
+   # Scopes reutilizables[m
+   scope :recientes,  -> { order(fecha: :desc) }[m
+[31m-  scope :de_alumno,  ->(nombre) { where('alumno ILIKE ?', "%#{nombre}%") }[m
+[31m-  scope :de_juego,   ->(nombre) { where('juego ILIKE ?',  "%#{nombre}%") }[m
+[32m+[m[32m  scope :de_alumno,  ->(nombre) { where("alumno ILIKE ?", "%#{nombre}%") }[m
+[32m+[m[32m  scope :de_juego,   ->(nombre) { where("juego ILIKE ?",  "%#{nombre}%") }[m
+   scope :ultimo_mes, -> { where(fecha: 1.month.ago..) }[m
+ [m
+   def porcentaje_aciertos[m
+[36m@@ -27,7 +27,7 @@[m [mclass Sesion < ApplicationRecord[m
+ [m
+   def as_json(options = {})[m
+     super(options.merge(only: %i[id alumno juego fecha aciertos intentos alumno_id]))[m
+[31m-      .merge('porcentaje' => porcentaje_aciertos)[m
+[32m+[m[32m      .merge("porcentaje" => porcentaje_aciertos)[m
+   end[m
+ [m
+   private[m
+[36m@@ -35,7 +35,7 @@[m [mclass Sesion < ApplicationRecord[m
+   def aciertos_no_superan_intentos[m
+     return unless aciertos && intentos[m
+     return unless aciertos > intentos[m
+[31m-    errors.add(:aciertos, 'no pueden superar el número de intentos')[m
+[32m+[m[32m    errors.add(:aciertos, "no pueden superar el número de intentos")[m
+   end[m
+ [m
+   def establecer_fecha[m
+[1mdiff --git a/app/models/user.rb b/app/models/user.rb[m
+[1mindex 44b2a86..eddddea 100644[m
+[1m--- a/app/models/user.rb[m
+[1m+++ b/app/models/user.rb[m
+[36m@@ -10,8 +10,8 @@[m [mclass User < ApplicationRecord[m
+   validates :nombre, presence: true[m
+   validates :rol,    inclusion: { in: ROLES }[m
+ [m
+[31m-  def alumno?   = rol == 'alumno'[m
+[31m-  def profesor? = rol == 'profesor'[m
+[31m-  def tecnico?  = rol == 'tecnico'[m
+[31m-  def padre?    = rol == 'padre'[m
+[32m+[m[32m  def alumno?   = rol == "alumno"[m
+[32m+[m[32m  def profesor? = rol == "profesor"[m
+[32m+[m[32m  def tecnico?  = rol == "tecnico"[m
+[32m+[m[32m  def padre?    = rol == "padre"[m
+ end[m
+[1mdiff --git a/config/initializers/cors.rb b/config/initializers/cors.rb[m
+[1mindex 20fbcf7..2d64bca 100644[m
+[1m--- a/config/initializers/cors.rb[m
+[1m+++ b/config/initializers/cors.rb[m
+[36m@@ -1,8 +1,8 @@[m
+ Rails.application.config.middleware.insert_before 0, Rack::Cors do[m
+   allow do[m
+[31m-    origins 'http://localhost:3000', 'http://127.0.0.1:3000'[m
+[32m+[m[32m    origins "http://localhost:3000", "http://127.0.0.1:3000"[m
+     resource "*",[m
+       headers: :any,[m
+[31m-      methods: [:get, :post, :put, :patch, :delete, :options, :head][m
+[32m+[m[32m      methods: [ :get, :post, :put, :patch, :delete, :options, :head ][m
+   end[m
+ end[m
+[1mdiff --git a/config/routes.rb b/config/routes.rb[m
+[1mindex 894d074..978b95a 100644[m
+[1m--- a/config/routes.rb[m
+[1m+++ b/config/routes.rb[m
+[36m@@ -1,22 +1,21 @@[m
+ Rails.application.routes.draw do[m
+   namespace :api do[m
+     namespace :v1 do[m
+[31m-      # Autenticación[m
+[31m-       post '/login',    to: 'auth#login'[m
+[31m-       post '/register', to: 'auth#register'[m
+[31m-       get   '/me', to: 'auth#me'[m
+[31m-       patch '/me', to: 'auth#update_me'[m
+[31m-       get '/dashboard', to: 'dashboard#index'[m
+[32m+[m[32m       # Autenticación[m
+[32m+[m[32m       post "/login",    to: "auth#login"[m
+[32m+[m[32m       post "/register", to: "auth#register"[m
+[32m+[m[32m       get   "/me", to: "auth#me"[m
+[32m+[m[32m       patch "/me", to: "auth#update_me"[m
+[32m+[m[32m       get "/dashboard", to: "dashboard#index"[m
+ [m
+       # Recursos[m
+[31m-      resources :juegos,   only: [:index, :show][m
+[31m-      resources :alumnos, only: [:index, :show, :create, :update, :destroy] do[m
+[31m-  	member do[m
+[31m-   	  get :estadisticas[m
+[31m-  	end[m
+[32m+[m[32m      resources :juegos,   only: [ :index, :show ][m
+[32m+[m[32m      resources :alumnos, only: [ :index, :show, :create, :update, :destroy ] do[m
+[32m+[m[32m    member do[m
+[32m+[m[32m       get :estadisticas[m
+[32m+[m[32m    end[m
+       end[m
+[31m-      resources :sesiones,  only: [:index, :create][m
+[31m-      [m
+[32m+[m[32m      resources :sesiones,  only: [ :index, :create ][m
+     end[m
+   end[m
+ end[m

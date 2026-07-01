@@ -2,8 +2,8 @@ module Api
   module V1
     class AlumnosController < ApplicationController
       before_action :authenticate_user!
-      before_action :autorizar_gestion!, only: [:create, :update, :destroy]
-      before_action :set_alumno,         only: [:show, :update, :destroy, :estadisticas]
+      before_action :autorizar_gestion!, only: [ :create, :update, :destroy ]
+      before_action :set_alumno,         only: [ :show, :update, :destroy, :estadisticas ]
 
       # GET /api/v1/alumnos
       def index
@@ -54,7 +54,7 @@ module Api
         end
 
         # Tendencia de mejora — comparar primera mitad vs segunda mitad de sesiones
-        tendencia = 'sin_datos'
+        tendencia = "sin_datos"
         if sesiones_totales >= 4
           mitad    = sesiones_totales / 2
           recientes = sesiones.first(mitad)
@@ -65,17 +65,17 @@ module Api
 
           diferencia = media_reciente - media_antigua
           tendencia = if diferencia > 0.05
-            'mejorando'
+            "mejorando"
           elsif diferencia < -0.05
-            'empeorando'
+            "empeorando"
           else
-            'estable'
+            "estable"
           end
         end
 
         # Sesiones esta semana
         inicio_semana = Date.today.beginning_of_week
-        sesiones_semana = sesiones.where('fecha >= ?', inicio_semana).count
+        sesiones_semana = sesiones.where("fecha >= ?", inicio_semana).count
 
         render json: {
           sesiones_totales:    sesiones_totales,
@@ -114,7 +114,7 @@ module Api
         else
           @alumno.destroy
         end
-        render json: { message: 'Alumno y cuenta eliminados correctamente' }, status: :ok
+        render json: { message: "Alumno y cuenta eliminados correctamente" }, status: :ok
       end
 
       private
@@ -122,7 +122,7 @@ module Api
       def set_alumno
         @alumno = Alumno.find(params[:id])
       rescue ActiveRecord::RecordNotFound
-        render json: { error: 'Alumno no encontrado' }, status: :not_found
+        render json: { error: "Alumno no encontrado" }, status: :not_found
       end
 
       def alumno_params
@@ -131,7 +131,7 @@ module Api
 
       def autorizar_gestion!
         unless current_user&.profesor? || current_user&.tecnico?
-          render json: { error: 'No autorizado. Solo profesores y técnicos pueden gestionar alumnos.' },
+          render json: { error: "No autorizado. Solo profesores y técnicos pueden gestionar alumnos." },
                  status: :forbidden
         end
       end

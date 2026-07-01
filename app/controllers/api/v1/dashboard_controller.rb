@@ -14,12 +14,12 @@ module Api
         # ── Stats globales ─────────────────────────────────────────
         total_alumnos   = alumnos.count
         total_sesiones  = sesiones.count
-        sesiones_hoy    = sesiones.where('fecha = ?', hoy).count
-        sesiones_semana = sesiones.where('fecha >= ?', inicio_semana).count
+        sesiones_hoy    = sesiones.where("fecha = ?", hoy).count
+        sesiones_semana = sesiones.where("fecha >= ?", inicio_semana).count
 
         # ── Alumnos más activos esta semana ────────────────────────
         activos_semana = Sesion
-          .where('fecha >= ?', inicio_semana)
+          .where("fecha >= ?", inicio_semana)
           .group(:alumno_id)
           .count
           .sort_by { |_, v| -v }
@@ -33,7 +33,7 @@ module Api
 
         # ── Alumnos sin sesiones recientes (más de 7 días) ─────────
         alumno_ids_activos = sesiones
-          .where('fecha >= ?', 7.days.ago.to_date)
+          .where("fecha >= ?", 7.days.ago.to_date)
           .pluck(:alumno_id)
           .uniq
 

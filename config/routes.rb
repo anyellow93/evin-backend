@@ -1,22 +1,21 @@
 Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
-      # Autenticación
-       post '/login',    to: 'auth#login'
-       post '/register', to: 'auth#register'
-       get   '/me', to: 'auth#me'
-       patch '/me', to: 'auth#update_me'
-       get '/dashboard', to: 'dashboard#index'
+       # Autenticación
+       post "/login",    to: "auth#login"
+       post "/register", to: "auth#register"
+       get   "/me", to: "auth#me"
+       patch "/me", to: "auth#update_me"
+       get "/dashboard", to: "dashboard#index"
 
       # Recursos
-      resources :juegos,   only: [:index, :show]
-      resources :alumnos, only: [:index, :show, :create, :update, :destroy] do
-  	member do
-   	  get :estadisticas
-  	end
+      resources :juegos,   only: [ :index, :show ]
+      resources :alumnos, only: [ :index, :show, :create, :update, :destroy ] do
+    member do
+       get :estadisticas
+    end
       end
-      resources :sesiones,  only: [:index, :create]
-      
+      resources :sesiones,  only: [ :index, :create ]
     end
   end
 end

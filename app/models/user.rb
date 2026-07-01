@@ -10,8 +10,8 @@ class User < ApplicationRecord
   validates :nombre, presence: true
   validates :rol,    inclusion: { in: ROLES }
 
-  def alumno?   = rol == 'alumno'
-  def profesor? = rol == 'profesor'
-  def tecnico?  = rol == 'tecnico'
-  def padre?    = rol == 'padre'
+  def alumno?   = rol == "alumno"
+  def profesor? = rol == "profesor"
+  def tecnico?  = rol == "tecnico"
+  def padre?    = rol == "padre"
 end

@@ -10,7 +10,7 @@ class Alumno < ApplicationRecord
                                          less_than: 100 },
                          allow_nil: true
   validates :dificultad, inclusion: { in: DIFICULTADES,
-                                      message: 'debe ser Fácil, Medio o Difícil' },
+                                      message: "debe ser Fácil, Medio o Difícil" },
                          allow_nil: true
   validates :progreso,   numericality: { only_integer: true,
                                          greater_than_or_equal_to: 0,
@@ -18,13 +18,13 @@ class Alumno < ApplicationRecord
                          allow_nil: true
 
   def as_json(options = {})
-    super(options).merge('img' => img_corporativa)
+    super(options).merge("img" => img_corporativa)
   end
 
   private
 
   # Devuelve la imagen corporativa EVIN si el alumno no tiene foto propia
   def img_corporativa
-    'img/corporativo.png'
+    "img/corporativo.png"
   end
 end
