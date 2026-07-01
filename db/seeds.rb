@@ -33,14 +33,14 @@ juegos_data = [
     img:         'img/juegos/diferencias.png',
     nivel:       'Medio',
     tipo:        'Atención visual'
-  }
+  },
   {
   nombre:      'Rasgos críticos',
   descripcion: 'Observa una forma incompleta y encuentra la forma completa entre los distractores. Trabaja la discriminación visual fina y el reconocimiento de formas.',
   img:         'img/juegos/rasgos.png',
   nivel:       'Medio',
   tipo:        'Atención visual'
-  }
+  },
   {
   nombre:      'Puzzle',
   descripcion: 'Reconstruye la ilustración colocando cada pieza en su posición correcta. Trabaja la percepción espacial, la memoria visual y la atención.',
