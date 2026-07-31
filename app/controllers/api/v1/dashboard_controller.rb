@@ -2,6 +2,7 @@ module Api
   module V1
     class DashboardController < ApplicationController
       before_action :authenticate_user!
+      before_action :autorizar_dashboard!
 
       # GET /api/v1/dashboard
       def index
@@ -102,6 +103,14 @@ module Api
             estable:    estable
           }
         }
+      end
+
+      private
+
+      def autorizar_dashboard!
+        unless current_user.profesor? || current_user.tecnico?
+          render json: { error: "No autorizado" }, status: :forbidden
+        end
       end
     end
   end

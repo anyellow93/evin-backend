@@ -4,11 +4,19 @@ module Api
       before_action :authenticate_user!
       before_action :autorizar_gestion!, only: [ :create, :update, :destroy ]
       before_action :set_alumno,         only: [ :show, :update, :destroy, :estadisticas ]
+      before_action :autorizar_lectura!, only: [ :show, :estadisticas ]
 
       # GET /api/v1/alumnos
       def index
-        alumnos = Alumno.all.order(:nombre)
-        render json: alumnos
+        if current_user.profesor? || current_user.tecnico?
+          alumnos = Alumno.all.order(:nombre)
+          render json: alumnos
+        elsif current_user.alumno? || current_user.padre?
+          # Un alumno o padre solo puede ver su propio registro, nunca el listado completo
+          render json: [ current_user.alumno ].compact
+        else
+          render json: { error: "No autorizado" }, status: :forbidden
+        end
       end
 
       # GET /api/v1/alumnos/:id
@@ -134,6 +142,16 @@ module Api
           render json: { error: "No autorizado. Solo profesores y técnicos pueden gestionar alumnos." },
                  status: :forbidden
         end
+      end
+
+      # Restringe show/estadisticas: profesores y técnicos ven cualquier alumno;
+      # un alumno o padre solo puede ver su propio registro.
+      def autorizar_lectura!
+        return if @alumno.nil? # set_alumno ya habrá respondido 404 en ese caso
+        return if current_user.profesor? || current_user.tecnico?
+        return if @alumno.user_id.present? && @alumno.user_id == current_user.id
+
+        render json: { error: "No autorizado para ver este alumno" }, status: :forbidden
       end
     end
   end

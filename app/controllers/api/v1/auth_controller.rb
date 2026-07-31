@@ -109,7 +109,8 @@ module Api::V1
         id:     user.id,
         nombre: user.nombre,
         email:  user.email,
-        rol:    user.rol
+        rol:    user.rol,
+        alumno_id: user.alumno&.id
       }
     end
 
