@@ -4,6 +4,8 @@ Rails.application.routes.draw do
        # Autenticación
        post "/login",    to: "auth#login"
        post "/register", to: "auth#register"
+       post '/password/forgot', to: 'auth#forgot_password'
+       post '/password/reset',  to: 'auth#reset_password'
        get   "/me", to: "auth#me"
        patch "/me", to: "auth#update_me"
        get "/dashboard", to: "dashboard#index"

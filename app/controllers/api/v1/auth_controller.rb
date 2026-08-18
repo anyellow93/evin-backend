@@ -44,20 +44,15 @@ module Api::V1
     def update_me
       user = usuario_autenticado
       return unless user
-
-      # Campos básicos
       attrs = {}
       attrs[:nombre] = params[:nombre].strip if params[:nombre].present?
       attrs[:email]  = params[:email].downcase.strip if params[:email].present?
-
-      # Cambio de contraseña (opcional)
       if params[:password].present?
         unless user.authenticate(params[:password_actual].to_s)
           return render json: { error: "La contraseña actual no es correcta" }, status: :unprocessable_entity
         end
         attrs[:password] = params[:password]
       end
-
       if user.update(attrs)
         render json: user_response(user), status: :ok
       else
@@ -68,13 +63,33 @@ module Api::V1
     # POST /api/v1/password/forgot
     def forgot_password
       user = User.find_by(email: params[:email]&.downcase)
+      if user
+        token = SecureRandom.urlsafe_base64(32)
+        user.update!(
+          reset_password_token:   token,
+          reset_password_sent_at: Time.current
+        )
+        PasswordMailer.reset_password(user).deliver_later
+      end
       # Respuesta genérica por seguridad — no revelamos si el email existe
       render json: { message: "Si ese correo está registrado, recibirás un enlace en breve." }, status: :ok
     end
 
+    # POST /api/v1/password/reset
+    def reset_password
+      user = User.find_by(reset_password_token: params[:token])
+      if user.nil? || user.reset_password_sent_at < 2.hours.ago
+        return render json: { error: "El enlace ha expirado o no es válido." }, status: :unprocessable_entity
+      end
+      if user.update(password: params[:password], reset_password_token: nil, reset_password_sent_at: nil)
+        render json: { message: "Contraseña actualizada correctamente." }, status: :ok
+      else
+        render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
+      end
+    end
+
     private
 
-    # Helper compartido: decodifica el JWT y devuelve el usuario
     def usuario_autenticado
       token = request.headers["Authorization"]&.split(" ")&.last
       unless token
@@ -106,10 +121,10 @@ module Api::V1
 
     def user_data(user)
       {
-        id:     user.id,
-        nombre: user.nombre,
-        email:  user.email,
-        rol:    user.rol,
+        id:        user.id,
+        nombre:    user.nombre,
+        email:     user.email,
+        rol:       user.rol,
         alumno_id: user.alumno&.id
       }
     end
