@@ -12,7 +12,6 @@ module Api
           alumnos = Alumno.all.order(:nombre)
           render json: alumnos
         elsif current_user.alumno? || current_user.padre?
-          # Un alumno o padre solo puede ver su propio registro, nunca el listado completo
           render json: [ current_user.alumno ].compact
         else
           render json: { error: "No autorizado" }, status: :forbidden
@@ -35,7 +34,7 @@ module Api
         ultima_sesion = sesiones.first&.fecha
 
         # Juegos practicados y favorito
-        juegos_count = Sesion.where(alumno_id: @alumno.id).group(:juego).count
+        juegos_count = Sesion.where(alumno_id: @alumno.id).group(:juego_nombre).count
         juego_favorito = juegos_count.max_by { |_, v| v }&.first
         juegos_practicados = juegos_count.keys
 
@@ -144,10 +143,8 @@ module Api
         end
       end
 
-      # Restringe show/estadisticas: profesores y técnicos ven cualquier alumno;
-      # un alumno o padre solo puede ver su propio registro.
       def autorizar_lectura!
-        return if @alumno.nil? # set_alumno ya habrá respondido 404 en ese caso
+        return if @alumno.nil?
         return if current_user.profesor? || current_user.tecnico?
         return if @alumno.user_id.present? && @alumno.user_id == current_user.id
 

@@ -9,14 +9,13 @@ module Api::V1
         render json: { error: "Email o contraseña incorrectos" }, status: :unauthorized
       end
     end
-
     # POST /api/v1/register
     def register
       user = User.new(
         nombre:   params[:nombre],
         email:    params[:email]&.downcase,
         password: params[:password],
-        rol:      params[:rol] || params[:role] || "profesor"
+        rol:      params[:rol] || params[:role] || "alumno"
       )
       if user.save
         if user.rol == "alumno"
@@ -32,14 +31,12 @@ module Api::V1
         render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
       end
     end
-
     # GET /api/v1/me
     def me
       user = usuario_autenticado
       return unless user
       render json: { user: user_data(user) }
     end
-
     # PATCH /api/v1/me
     def update_me
       user = usuario_autenticado
@@ -59,7 +56,6 @@ module Api::V1
         render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
       end
     end
-
     # POST /api/v1/password/forgot
     def forgot_password
       user = User.find_by(email: params[:email]&.downcase)
@@ -104,11 +100,9 @@ module Api::V1
         nil
       end
     end
-
     def user_response(user)
       { token: generar_jwt(user), user: user_data(user) }
     end
-
     def generar_jwt(user)
       payload = {
         user_id: user.id,
@@ -118,7 +112,6 @@ module Api::V1
       }
       JWT.encode(payload, jwt_secret, "HS256")
     end
-
     def user_data(user)
       {
         id:        user.id,
@@ -128,7 +121,6 @@ module Api::V1
         alumno_id: user.alumno&.id
       }
     end
-
     def jwt_secret
       Rails.application.secret_key_base
     end

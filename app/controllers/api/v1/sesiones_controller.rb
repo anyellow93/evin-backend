@@ -20,28 +20,32 @@ module Api
 
       # POST /api/v1/sesiones
       def create
-    sesion = ::Sesion.new(
-      alumno:   params[:alumno],
-      juego:    params[:juego],
-      aciertos: params[:aciertos],
-      intentos: params[:intentos],
-      fecha:    params[:fecha]
-    )
+        sesion = ::Sesion.new(
+          alumno_nombre: params[:alumno],
+          juego_nombre:  params[:juego],
+          aciertos:      params[:aciertos],
+          intentos:      params[:intentos],
+          fecha:         params[:fecha]
+        )
 
-    # Vincular alumno_id si viene y es válido
-    if params[:alumno_id].present?
-      sesion.alumno_id = params[:alumno_id].to_i
-    elsif params[:alumno].present?
-      alumno = ::Alumno.find_by(nombre: params[:alumno])
-      sesion.alumno_id = alumno.id if alumno
-    end
+        if params[:alumno_id].present?
+          sesion.alumno_id = params[:alumno_id].to_i
+        elsif params[:alumno].present?
+          alumno = ::Alumno.find_by(nombre: params[:alumno])
+          sesion.alumno_id = alumno.id if alumno
+        end
 
-    if sesion.save
-      render json: sesion, status: :created
-    else
-      render json: { errors: sesion.errors.full_messages }, status: :unprocessable_entity
-    end
-  end
+        if params[:juego].present?
+          juego = ::Juego.find_by(nombre: params[:juego])
+          sesion.juego_id = juego.id if juego
+        end
+
+        if sesion.save
+          render json: sesion, status: :created
+        else
+          render json: { errors: sesion.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
 
       private
 

@@ -1,8 +1,8 @@
 class Sesion < ApplicationRecord
-  # belongs_to :alumno, optional: true  # comentado para evitar conflicto con campo alumno string
+  belongs_to :juego, optional: true
 
-  validates :alumno,   presence: true
-  validates :juego,    presence: true
+  validates :alumno_nombre, presence: true
+  validates :juego_nombre,  presence: true
   validates :aciertos, presence: true,
                        numericality: { only_integer: true,
                                        greater_than_or_equal_to: 0 }
@@ -14,10 +14,9 @@ class Sesion < ApplicationRecord
 
   before_validation :establecer_fecha
 
-  # Scopes reutilizables
   scope :recientes,  -> { order(fecha: :desc) }
-  scope :de_alumno,  ->(nombre) { where("alumno ILIKE ?", "%#{nombre}%") }
-  scope :de_juego,   ->(nombre) { where("juego ILIKE ?",  "%#{nombre}%") }
+  scope :de_alumno,  ->(nombre) { where("alumno_nombre ILIKE ?", "%#{nombre}%") }
+  scope :de_juego,   ->(nombre) { where("juego_nombre ILIKE ?",  "%#{nombre}%") }
   scope :ultimo_mes, -> { where(fecha: 1.month.ago..) }
 
   def porcentaje_aciertos
@@ -26,7 +25,7 @@ class Sesion < ApplicationRecord
   end
 
   def as_json(options = {})
-    super(options.merge(only: %i[id alumno juego fecha aciertos intentos alumno_id]))
+    super(options.merge(only: %i[id alumno_nombre juego_nombre fecha aciertos intentos alumno_id juego_id]))
       .merge("porcentaje" => porcentaje_aciertos)
   end
 
