@@ -21,7 +21,7 @@ juegos_data = [
     tipo:        'Atención visual'
   },
   {
-    nombre:      'Radar visual',
+    nombre:      'Exploraciones',
     descripcion: 'El alumno debe localizar un estímulo objetivo entre una cuadrícula de imágenes distractoras. Entrena los recorridos visuales y la discriminación figura-fondo.',
     img:         'img/juegos/radar.png',
     nivel:       'Difícil',
@@ -35,7 +35,7 @@ juegos_data = [
     tipo:        'Atención visual'
   },
   {
-  nombre:      'Rasgos críticos',
+  nombre:      'Cierre Visual',
   descripcion: 'Observa una forma incompleta y encuentra la forma completa entre los distractores. Trabaja la discriminación visual fina y el reconocimiento de formas.',
   img:         'img/juegos/rasgos.png',
   nivel:       'Medio',
@@ -119,7 +119,7 @@ begin
 
     j_mem  = Juego.find_by(nombre: 'Encuentra las parejas')
     j_grid = Juego.find_by(nombre: 'Recuerda las casillas')
-    j_rad  = Juego.find_by(nombre: 'Radar visual')
+    j_rad  = Juego.find_by(nombre: 'Exploraciones')
     j_dif  = Juego.find_by(nombre: 'Encuentra las diferencias')
 
     [
@@ -137,17 +137,7 @@ begin
       { alumno_id: maria.id,  juego_id: j_dif.id,  aciertos: 5,  intentos: 7,  fecha: 2.days.ago  }
     ].each { |s| Sesion.create!(s) }
 
-  elsif cols.include?('alumno') && cols.include?('juego')
-    # Servidor producción: usa strings
-    [
-      { alumno: 'Ana García Ruiz',     juego: 'Encuentra las parejas',     aciertos: 6,  intentos: 10, fecha: 10.days.ago },
-      { alumno: 'Ana García Ruiz',     juego: 'Encuentra las parejas',     aciertos: 8,  intentos: 10, fecha: 1.day.ago   },
-      { alumno: 'Carlos López Sanz',   juego: 'Recuerda las casillas',     aciertos: 5,  intentos: 5,  fecha: 3.days.ago  },
-      { alumno: 'Pablo Martín Gil',    juego: 'Radar visual',              aciertos: 11, intentos: 12, fecha: 2.days.ago  },
-      { alumno: 'Lucía Torres Vega',   juego: 'Encuentra las parejas',     aciertos: 5,  intentos: 10, fecha: 1.day.ago   },
-      { alumno: 'Diego Fernández',     juego: 'Encuentra las diferencias', aciertos: 3,  intentos: 5,  fecha: 4.days.ago  },
-      { alumno: 'María Sánchez Pérez', juego: 'Encuentra las diferencias', aciertos: 5,  intentos: 7,  fecha: 2.days.ago  }
-    ].each { |s| Sesion.create!(s) }
+  
   end
 
   puts "  ✓ #{Sesion.count} sesiones creadas"
