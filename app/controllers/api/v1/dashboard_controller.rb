@@ -45,7 +45,7 @@ module Api
 
         # ── Juegos más practicados ─────────────────────────────────
         juegos_populares = Sesion.all
-          .group(:juego)
+          .group(:juego_nombre)
           .count
           .sort_by { |_, v| -v }
           .first(6)
@@ -55,8 +55,8 @@ module Api
         actividad_reciente = sesiones.first(10).map do |s|
           {
             id:      s.id,
-            alumno:  s.alumno,
-            juego:   s.juego,
+            alumno:  s.alumno_nombre,
+            juego:   s.juego_nombre,
             fecha:   s.fecha,
             aciertos: s.aciertos,
             intentos: s.intentos
