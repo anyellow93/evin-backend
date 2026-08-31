@@ -18,6 +18,7 @@ Rails.application.routes.draw do
     end
       end
       resources :sesiones,  only: [ :index, :create ]
+      resources :users,     only: [ :index, :update ]
     end
   end
 end

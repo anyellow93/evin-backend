@@ -9,13 +9,21 @@ module Api::V1
         render json: { error: "Email o contraseña incorrectos" }, status: :unauthorized
       end
     end
+    # Roles que un usuario puede elegir libremente al registrarse.
+    # "profesor" y "tecnico" quedan excluidos: solo un administrador
+    # (usuario con rol "tecnico") puede asignarlos, desde /api/v1/users.
+    ROLES_AUTORREGISTRO = %w[alumno padre].freeze
+
     # POST /api/v1/register
     def register
+      rol_solicitado = params[:rol] || params[:role]
+      rol_final = ROLES_AUTORREGISTRO.include?(rol_solicitado) ? rol_solicitado : "alumno"
+
       user = User.new(
         nombre:   params[:nombre],
         email:    params[:email]&.downcase,
         password: params[:password],
-        rol:      params[:rol] || params[:role] || "alumno"
+        rol:      rol_final
       )
       if user.save
         if user.rol == "alumno"
